@@ -34,23 +34,25 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Debug Directory Structure
-        run: ls -la  # Check where pom.xml is located
+        run: ls -la
+
+      - name: Check if pom.xml Exists
+        run: |
+          if [ -f "pom.xml" ]; then
+            echo "pom.xml found, proceeding with build..."
+          elif [ -f "lambda-project/pom.xml" ]; then
+            echo "pom.xml found in lambda-project, moving into directory..."
+            cd lambda-project
+          else
+            echo "ERROR: pom.xml not found!"
+            exit 1
+          fi
 
       - name: Build and Package Lambda
         run: |
-          if [ -f "pom.xml" ]; then
-            echo "Found pom.xml in root"
-            mvn clean package
-            cp target/*.jar lambda.zip
-          elif [ -d "backend-lambda" ] && [ -f "backend-lambda/pom.xml" ]; then
-            echo "Found pom.xml in backend-lambda"
-            cd backend-lambda
-            mvn clean package
-            cp target/*.jar ../lambda.zip
-          else
-            echo "Error: pom.xml not found!"
-            exit 1
-	  fi
+          mvn clean package
+          cp target/*.jar ../lambda.zip
+
 
       - name: Deploy to AWS Lambda
         run: |
