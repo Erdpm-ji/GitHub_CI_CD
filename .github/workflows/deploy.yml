@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Install AWS CLI Using Pip
+      - name: Install AWS CLI
         run: |
           python -m pip install --upgrade pip
           pip install awscli --upgrade --user
@@ -36,22 +36,15 @@ jobs:
       - name: Debug Directory Structure
         run: ls -la
 
-      - name: Check and Move to Project Directory
-        run: |
-          if [ -f "lambda-project/pom.xml" ]; then
-            echo "pom.xml found in lambda-project, moving into directory..."
-            cd lambda-project
-          else
-            echo "ERROR: pom.xml not found!"
-            exit 1
-          fi
-
       - name: Build and Package Lambda
+        working-directory: lambda-project  # Moves into lambda-project directory
         run: |
-          cd lambda-project
           mvn clean package
-          cp target/*.jar ../lambda.zip # Move output to repo root
+          mkdir -p ../deploy
+          cp target/*.jar ../deploy/lambda.jar  # Copy the JAR for packaging
+          cd ../deploy
+          zip lambda.zip lambda.jar  # Zip it properly for AWS Lambda
 
       - name: Deploy to AWS Lambda
         run: |
-          aws lambda update-function-code --function-name skeleton-lambda-ci --zip-file fileb://lambda.zip
+          aws lambda update-function-code --function-name skeleton-lambda-ci --zip-file fileb://deploy/lambda.zip

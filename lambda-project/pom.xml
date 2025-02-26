@@ -73,6 +73,33 @@
                 </execution>
             </executions>
         </plugin>
+		<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.2.4</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+            <configuration>
+                <filters>
+                    <filter>
+                        <artifact>*:*</artifact>
+                        <excludes>
+                            <exclude>META-INF/LICENSE*</exclude>
+                            <exclude>META-INF/NOTICE*</exclude>
+                            <exclude>META-INF/DEPENDENCIES</exclude>
+                            <exclude>META-INF/io.netty.versions.properties</exclude>
+                        </excludes>
+                    </filter>
+                </filters>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+
     </plugins>
   </build>
 
