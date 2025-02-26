@@ -40,7 +40,7 @@ jobs:
         working-directory: lambda-project  # Moves into lambda-project directory
         run: |
           mvn clean package
-          mkdir -p ../deploy
+          mkdir ../deploy
           cp target/*.jar ../deploy/lambda.jar  # Copy the JAR for packaging
           cd ../deploy
           zip lambda.zip lambda.jar  # Zip it properly for AWS Lambda
