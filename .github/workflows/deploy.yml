@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Ensures a full clone
 
       - name: Set Up Java
         uses: actions/setup-java@v3
@@ -36,14 +34,22 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Debug Directory Structure
-        run: ls -la  # Debugging to check where pom.xml is located
+        run: ls -la  # Check where pom.xml is located
 
       - name: Build and Package Lambda
         run: |
-          cd lambda-project  # Change to the correct project folder
-          ls -la  # Check if pom.xml is present
-          mvn clean package
-          cp target/*.jar ../lambda.zip  # Adjust path if needed
+          if [ -f "pom.xml" ]; then
+            echo "Found pom.xml in root"
+            mvn clean package
+            cp target/*.jar lambda.zip
+          elif [ -d "backend-lambda" ] && [ -f "backend-lambda/pom.xml" ]; then
+            echo "Found pom.xml in backend-lambda"
+            cd backend-lambda
+            mvn clean package
+            cp target/*.jar ../lambda.zip
+          else
+            echo "Error: pom.xml not found!"
+            exit 1
 
       - name: Deploy to AWS Lambda
         run: |
