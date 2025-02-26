@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensures a full clone
 
       - name: Set Up Java
         uses: actions/setup-java@v3
@@ -33,10 +35,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Debug Directory Structure
+        run: ls -la  # Debugging to check where pom.xml is located
+
       - name: Build and Package Lambda
         run: |
+          cd lambda-project  # Change to the correct project folder
+          ls -la  # Check if pom.xml is present
           mvn clean package
-          cp target/*.jar lambda.zip
+          cp target/*.jar ../lambda.zip  # Adjust path if needed
 
       - name: Deploy to AWS Lambda
         run: |
