@@ -20,9 +20,12 @@ jobs:
           java-version: '11'
 
       - name: Install AWS CLI
-        run: |
-          sudo apt update
-          sudo apt install -y awscli
+  	run: |
+    	  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    	  unzip awscliv2.zip
+    	  sudo ./aws/install
+    	  aws --version
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -38,4 +41,4 @@ jobs:
 
       - name: Deploy to AWS Lambda
         run: |
-          aws lambda update-function-code --function-name skeleton-lambda-app --zip-file fileb://lambda.zip
+          aws lambda update-function-code --function-name skeleton-lambda-ci --zip-file fileb://lambda.zip
