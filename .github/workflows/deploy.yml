@@ -50,7 +50,7 @@ jobs:
         run: |
           cd lambda-project
           mvn clean package
-          cp target/*.jar ../lambda.zip  # Move output to repo root
+          cp target/*.jar ../lambda.zip # Move output to repo root
 
       - name: Deploy to AWS Lambda
         run: |
