@@ -3,7 +3,7 @@ name: Deploy to AWS Lambda
 on:
   push:
     branches:
-      - main  # Triggers deployment when pushing to main branch
+      - main  # Triggers deployment when pushing to the main branch
 
 jobs:
   deploy:
@@ -36,11 +36,9 @@ jobs:
       - name: Debug Directory Structure
         run: ls -la
 
-      - name: Check if pom.xml Exists
+      - name: Check and Move to Project Directory
         run: |
-          if [ -f "pom.xml" ]; then
-            echo "pom.xml found, proceeding with build..."
-          elif [ -f "lambda-project/pom.xml" ]; then
+          if [ -f "lambda-project/pom.xml" ]; then
             echo "pom.xml found in lambda-project, moving into directory..."
             cd lambda-project
           else
@@ -50,9 +48,9 @@ jobs:
 
       - name: Build and Package Lambda
         run: |
+          cd lambda-project
           mvn clean package
-          cp target/*.jar ../lambda.zip
-
+          cp target/*.jar ../lambda.zip  # Move output to repo root
 
       - name: Deploy to AWS Lambda
         run: |
